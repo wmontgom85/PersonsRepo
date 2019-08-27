@@ -21,10 +21,10 @@ class PersonsViewModel : BaseViewModel() {
     //create a coroutine scope with the coroutine context
     private val scope = CoroutineScope(coroutineContext)
 
-    //live data that will be populated as forms update
-    val formsLiveData = MutableLiveData<Person>()
+    //live data that will be populated as persons update
+    val personsLiveData = MutableLiveData<Person>()
 
-    fun getLatestForms() {
+    fun getRandomPerson() {
         ///launch the coroutine scope
         scope.launch {
             //get latest forms from forms repo
@@ -33,10 +33,9 @@ class PersonsViewModel : BaseViewModel() {
                 call = { personsApi.getRandomPerson() },
                 errorMessage = "Error fetching forms"
                 //convert to mutable list
-            )?.let {
-                //post the value inside live data
-                formsLiveData.postValue(it)
-            }
+            )?.results?.get(0)
+
+            personsLiveData.postValue(person)
         }
     }
 

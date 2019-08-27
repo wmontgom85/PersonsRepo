@@ -6,6 +6,6 @@ import retrofit2.http.GET
 
 interface PersonsApi {
     // attempts get a random person
-    @GET
-    suspend fun getRandomPerson(): Response<Person>
+    @GET("?results=1")
+    suspend fun getRandomPerson(): Response<PersonsApiResponse>
 }

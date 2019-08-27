@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Person(
-    @PrimaryKey(autoGenerate = true) @NonNull val id: Long,
+    @PrimaryKey(autoGenerate = true) @NonNull val _id: Long,
     val gender: String?,
     @Ignore val name: Name?,
     @Ignore val location: Location?,
@@ -15,20 +15,19 @@ data class Person(
     @Ignore val dob: DOB?,
     val phone: String?,
     val cell: String?,
-    @Ignore val picture: Picture?
+    @Ignore val picture: Picture?,
+    var firstName : String? = "",
+    var lastName : String? = "",
+    var street : String? = "",
+    var city : String? = "",
+    var state : String? = "",
+    var postcode : String? = "",
+    var birthdate : String? = "",
+    var avatarLarge : String? = "",
+    var avatarMedium : String? = "",
+    var thumbnail : String? = ""
 ) {
-    private var firstName : String? = ""
-    private var lastName : String? = ""
-    private var street : String? = ""
-    private var city : String? = ""
-    private var state : String? = ""
-    private var postcode : String? = ""
-    private var birthdate : String? = ""
-    private var avatarLarge : String? = ""
-    private var avatarMedium : String? = ""
-    private var thumbnail : String? = ""
-
-    init {
+    fun fill() {
         name?.let {
             firstName = it.first
             lastName = it.last

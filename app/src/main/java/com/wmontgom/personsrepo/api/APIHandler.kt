@@ -47,7 +47,7 @@ object APIHandler {
     internal fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
             .client(apiClient)
-            .baseUrl("http://10.0.2.2/api/v1/")
+            .baseUrl("https://randomuser.me/api/1.2/")
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
     }

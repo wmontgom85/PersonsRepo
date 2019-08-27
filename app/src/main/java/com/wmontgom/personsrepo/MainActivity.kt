@@ -4,18 +4,37 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu
 import android.view.MenuItem
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+import com.wmontgom.personsrepo.viewmodel.PersonsViewModel
 
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var personsViewModel: PersonsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
+        //create instance of view model factory
+        val viewModelFactory = PersonsViewModelFactory()
+
+        //Use view ModelFactory to initialize view model
+        personsViewModel = ViewModelProviders.of(this@MainActivity, viewModelFactory).get(PersonsViewModel::class.java)
+
+        //observe viewModel live data
+        personsViewModel.personsLiveData.observe(this, Observer {
+            //bind your ui here
+            it.fill()
+            System.out.println("person:" + it)
+        })
+
         fab.setOnClickListener { view ->
-            getNewUser()
+            personsViewModel.getRandomPerson()
         }
     }
 
@@ -37,5 +56,12 @@ class MainActivity : AppCompatActivity() {
 
     fun getNewUser() {
 
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    class PersonsViewModelFactory : ViewModelProvider.NewInstanceFactory(){
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            return PersonsViewModel() as T
+        }
     }
 }

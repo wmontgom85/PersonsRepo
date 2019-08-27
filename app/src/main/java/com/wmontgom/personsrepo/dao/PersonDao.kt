@@ -7,7 +7,7 @@ public interface PersonDao {
     @Query("SELECT * FROM Person")
     fun getPeople(): List<Person>
 
-    @Query("SELECT * FROM Person WHERE id = :id")
+    @Query("SELECT * FROM Person WHERE _id = :id")
     fun getAmount(id: Long) : Person
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
