@@ -1,4 +1,4 @@
-package com.qgiv.personsrepo
+package com.wmontgom.personsrepo
 
 import org.junit.Test
 
