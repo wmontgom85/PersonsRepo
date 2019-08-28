@@ -3,6 +3,7 @@ package com.wmontgom.personsrepo.dao
 import androidx.room.*
 import com.wmontgom.personsrepo.model.Person
 
+@Dao
 public interface PersonDao {
     @Query("SELECT * FROM Person")
     fun getPeople(): List<Person>

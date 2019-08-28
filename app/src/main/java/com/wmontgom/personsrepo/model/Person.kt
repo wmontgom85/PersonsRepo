@@ -7,14 +7,14 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Person(
-    @PrimaryKey(autoGenerate = true) @NonNull val _id: Long,
-    val gender: String?,
-    @Ignore val name: Name?,
-    @Ignore val location: Location?,
-    val email: String?,
-    @Ignore val dob: DOB?,
-    val phone: String?,
-    val cell: String?,
+    @PrimaryKey(autoGenerate = true) var _id: Long,
+    var gender: String?,
+    @Ignore var name: Name?,
+    @Ignore var location: Location?,
+    var email: String?,
+    @Ignore var dob: DOB?,
+    var phone: String?,
+    var cell: String?,
     @Ignore val picture: Picture?,
     var firstName : String? = "",
     var lastName : String? = "",
@@ -27,6 +27,8 @@ data class Person(
     var avatarMedium : String? = "",
     var thumbnail : String? = ""
 ) {
+    constructor() : this(0L,"",Name("",""),Location("","","",""),"",DOB(""),"","",Picture("","",""),"","","","","","","","","","")
+
     fun fill() {
         name?.let {
             firstName = it.first
@@ -49,6 +51,32 @@ data class Person(
             avatarMedium = it.medium
             thumbnail = it.thumbnail
         }
+    }
+
+    fun buildAddress() : String {
+        var a = "";
+
+        street?.let { a += it }
+
+        city?.let { a += when {
+                (a.length > 0) -> ", $it"
+                else -> it
+            }
+        }
+
+        state?.let { a += when {
+                (a.length > 0) -> ", $it"
+                else -> it
+            }
+        }
+
+        postcode?.let { a += when {
+                (a.length > 0) -> ", $it"
+                else -> it
+            }
+        }
+
+        return a
     }
 }
 
