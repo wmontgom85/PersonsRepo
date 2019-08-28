@@ -31,6 +31,8 @@ import kotlin.coroutines.CoroutineContext
 // @TODO implement swipe to delete
 // @TODO allow manual inputting of a person
 // @TODO add ability to edit person
+// @TODO implement clear setting
+// @TODO implement loading modal
 
 class MainActivity : AppCompatActivity(), CoroutineScope {
     private lateinit var personsViewModel: PersonsViewModel
