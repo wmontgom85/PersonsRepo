@@ -164,6 +164,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         val avatar : ImageView = v.findViewById(R.id.avatar)
         val name : TextView = v.findViewById(R.id.name)
         val address : TextView  = v.findViewById(R.id.address)
+        val phone : TextView  = v.findViewById(R.id.phone)
 
         fun populate(p : Person) {
             p.avatarLarge?.let {
@@ -172,8 +173,10 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
                 avatar?.visibility = View.INVISIBLE
             }
 
-            name?.text = p.firstName + " " + p.lastName
-            address?.text = p.buildAddress()
+
+            name.text = String.format("%s %s", p.firstName?.capitalize(), p.lastName?.capitalize())
+            address.text = p.buildAddress().capitalize()
+            phone.text = p.phone
         }
     }
 }

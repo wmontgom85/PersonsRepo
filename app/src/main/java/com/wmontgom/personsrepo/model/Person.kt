@@ -54,29 +54,36 @@ data class Person(
     }
 
     fun buildAddress() : String {
-        var a = "";
+        var line1 = ""
+        var line2 = ""
 
-        street?.let { a += it }
+        street?.let { s -> line1 = s.split(' ').joinToString(" ") { it.capitalize() } }
 
-        city?.let { a += when {
-                (a.length > 0) -> ", $it"
+        city?.let {
+            line2 = it.capitalize()
+        }
+
+        state?.let {
+            line2 += when {
+                line2.isNotEmpty() -> ", ${it.capitalize()}"
+                else -> it.capitalize()
+            }
+        }
+
+        postcode?.let {
+            line2 += when {
+                line2.isNotEmpty() -> ", $it"
                 else -> it
             }
         }
 
-        state?.let { a += when {
-                (a.length > 0) -> ", $it"
-                else -> it
-            }
+        return when {
+            (line1.isNotEmpty() && line2.isNotEmpty()) -> "$line1 \n$line2"
+            line1.isNotEmpty() -> line1
+            line2.isNotEmpty() -> line2
+            else -> ""
         }
 
-        postcode?.let { a += when {
-                (a.length > 0) -> ", $it"
-                else -> it
-            }
-        }
-
-        return a
     }
 }
 
