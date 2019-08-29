@@ -1,5 +1,7 @@
 package com.wmontgom.personsrepo
 
+import android.animation.AnimatorSet
+import android.animation.LayoutTransition
 import android.app.AlertDialog
 import android.app.Application
 import android.os.Bundle
@@ -27,6 +29,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
+import android.animation.ValueAnimator
+import android.view.animation.LinearInterpolator
+
 
 // @TODO implement swipe to delete
 // @TODO allow manual inputting of a person
@@ -78,13 +83,20 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
 
                 val dialog: AlertDialog = builder.create()
 
+                loading.visibility = View.GONE
                 dialog.show()
             }
         })
 
-        fab.setOnClickListener { view ->
-            personsViewModel.getRandomPerson()
-        }
+
+        // throttle the fab so that the animation can complete before another click is available
+        val menuAction: (View) -> Unit = throttleFirst(350L, MainScope(), this::hideShowActionMenu)
+        fab.setOnClickListener(menuAction)
+
+        // throttle person creation actions
+        val personActon: (View) -> Unit = throttleFirst(500L, MainScope(), this::createUser)
+        create_action.setOnClickListener(personActon)
+        random_action.setOnClickListener(personActon)
     }
 
     override fun onDestroy() {
@@ -108,6 +120,54 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
+    fun hideShowActionMenu(v : View) {
+        if (action_menu.width > 0) {
+            hideActionMenu()
+        } else {
+            showActionMenu()
+        }
+    }
+
+    fun showActionMenu() {
+        if (action_menu.width == 0) {
+            animateActionMenu(0, 140.px(), 0, 100.px(), 0f, -45f)
+        }
+    }
+
+    fun hideActionMenu() {
+        if (action_menu.width > 0) {
+            animateActionMenu(140.px(), 0, 100.px(), 0, -45f, 0f)
+        }
+    }
+
+    fun animateActionMenu(ws: Int, we: Int, hs: Int, he: Int, rs: Float, re: Float) {
+        val wa = ValueAnimator.ofInt(ws, we)
+        wa.addUpdateListener { action_menu.newWidth(it.animatedValue as Int) }
+
+        val ha = ValueAnimator.ofInt(hs, he)
+        ha.addUpdateListener { action_menu.newHeight(it.animatedValue as Int) }
+
+        val ra = ValueAnimator.ofFloat(rs, re)
+        ra.addUpdateListener { fab.rotation = it.animatedValue as Float }
+
+        val animset = AnimatorSet()
+        animset.play(wa).with(ha).with(ra)
+        animset.duration = 300
+        animset.start()
+    }
+
+    fun createUser(v: View) {
+        hideActionMenu()
+
+        if (v == create_action) {
+
+        } else {
+            // generate random user
+            loading.visibility = View.VISIBLE
+            personsViewModel.getRandomPerson()
+        }
+    }
+
     /**
      * Adds the new person to the DB (if exists) and refreshes the persons list
      * @param Person?
@@ -126,6 +186,8 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
             }
 
             query.await()
+
+            loading.visibility = View.GONE
 
             // update recycler view
             adapter.notifyDataSetChanged()
@@ -174,7 +236,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
             } ?: run {
                 avatar?.visibility = View.INVISIBLE
             }
-
 
             name.text = String.format("%s %s", p.firstName?.capitalize(), p.lastName?.capitalize())
             address.text = p.buildAddress().capitalize()

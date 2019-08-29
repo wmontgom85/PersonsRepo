@@ -31,4 +31,45 @@
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@android:drawable/ic_input_add" />
 
+    <LinearLayout
+            android:id="@+id/action_menu"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            android:background="@drawable/border_5dp_b0bfb3_s_fff_b"
+            android:padding="10dp"
+            android:elevation="2dp"
+            android:layout_marginBottom="80dp"
+            android:layout_marginEnd="16dp"
+            app:layout_anchor="@id/fab"
+            app:layout_anchorGravity="end">
+
+        <TextView
+                android:id="@+id/create_action"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Create Person"
+                android:textSize="16sp"
+                android:maxLines="1"/>
+
+        <TextView
+                android:id="@+id/random_action"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Random Person"
+                android:layout_marginTop="20dp"
+                android:textSize="16sp"
+                android:maxLines="1"/>
+
+    </LinearLayout>
+
+    <ProgressBar
+            android:id="@+id/loading"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:visibility="gone">
+    </ProgressBar>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
