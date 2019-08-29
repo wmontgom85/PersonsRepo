@@ -6,4 +6,5 @@
     <string name="address_label">Address:</string>
     <string name="birthday_label">Birthdate:</string>
     <string name="phone_label">Phone:</string>
+    <string name="title_activity_create_user">Create New Person</string>
 </resources>

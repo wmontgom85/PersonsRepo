@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         fab.setOnClickListener(menuAction)
 
         // throttle person creation actions
-        val personActon: (View) -> Unit = throttleFirst(500L, MainScope(), this::createUser)
+        val personActon: (View) -> Unit = throttleFirst(500L, MainScope(), this::createPerson)
         create_action.setOnClickListener(personActon)
         random_action.setOnClickListener(personActon)
     }
@@ -122,6 +122,9 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
+    /**
+     * Hides or shows the action menu based on its current visibility
+     */
     fun hideShowActionMenu(v : View) {
         if (action_menu.width > 0) {
             hideActionMenu()
@@ -130,18 +133,27 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
+    /**
+     * Shows the action menu
+     */
     fun showActionMenu() {
-        if (action_menu.width == 0) {
+        if (action_menu.width == 0) { // do nothing if it's already expanded
             animateActionMenu(0, 140.px(), 0, 100.px(), 0f, -45f)
         }
     }
 
+    /**
+     * Hides the action menu
+     */
     fun hideActionMenu() {
-        if (action_menu.width > 0) {
+        if (action_menu.width > 0) { // do nothing if it's already collapsed
             animateActionMenu(140.px(), 0, 100.px(), 0, -45f, 0f)
         }
     }
 
+    /**
+     * Animates the expansion or collapsion (yes, i know that's not a word) of the action menu
+     */
     fun animateActionMenu(ws: Int, we: Int, hs: Int, he: Int, rs: Float, re: Float) {
         val wa = ValueAnimator.ofInt(ws, we)
         wa.addUpdateListener { action_menu.newWidth(it.animatedValue as Int) }
@@ -158,7 +170,10 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         animset.start()
     }
 
-    fun createUser(v: View) {
+    /**
+     * Sends the user to a new screen to manually input person data or randomly generates one from the randomuser API
+     */
+    fun createPerson(v: View) {
         hideActionMenu()
 
         if (v == create_action) {
