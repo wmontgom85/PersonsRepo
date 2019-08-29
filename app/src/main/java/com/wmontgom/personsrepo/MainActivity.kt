@@ -37,7 +37,9 @@ import android.view.animation.LinearInterpolator
 // @TODO allow manual inputting of a person
 // @TODO add ability to edit person
 // @TODO implement clear setting
-// @TODO implement loading modal
+// @TODO implement search
+// @TODO implement sorting
+// @TODO implement reordering
 
 class MainActivity : AppCompatActivity(), CoroutineScope {
     private lateinit var personsViewModel: PersonsViewModel
