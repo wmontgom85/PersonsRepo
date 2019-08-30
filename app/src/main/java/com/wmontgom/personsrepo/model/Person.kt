@@ -1,9 +1,13 @@
 package com.wmontgom.personsrepo.model
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.annotation.NonNull
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import java.io.ByteArrayOutputStream
 
 @Entity
 data class Person(
@@ -25,7 +29,8 @@ data class Person(
     var birthdate : String? = "",
     var avatarLarge : String? = "",
     var avatarMedium : String? = "",
-    var thumbnail : String? = ""
+    var thumbnail : String? = "",
+    @ColumnInfo(typeAffinity = ColumnInfo.BLOB) var image_blob : ByteArray? = null
 ) {
     constructor() : this(0L,"",Name("",""),Location("","","",""),"",DOB(""),"","",Picture("","",""),"","","","","","","","","","")
 
@@ -83,7 +88,25 @@ data class Person(
             line2.isNotEmpty() -> line2
             else -> ""
         }
+    }
 
+    fun setImage(img: Bitmap) {
+        try {
+            val stream = ByteArrayOutputStream()
+            img.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            this.image_blob = stream.toByteArray()
+        } catch (tx: Throwable) {
+            this.image_blob = null
+        }
+    }
+
+    fun getImage() : Bitmap? {
+        image_blob?.let {
+            try {
+                return BitmapFactory.decodeByteArray(it,0, it.size)
+            } catch (tx: Throwable) {}
+        }
+        return null
     }
 }
 

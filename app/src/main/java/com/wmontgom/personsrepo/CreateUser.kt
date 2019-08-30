@@ -5,6 +5,8 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -18,14 +20,15 @@ import com.wmontgom.personsrepo.model.Person
 import kotlinx.android.synthetic.main.activity_create_user.toolbar
 import kotlinx.android.synthetic.main.content_create_user.*
 import kotlinx.coroutines.*
-import java.io.IOException
 import kotlin.coroutines.CoroutineContext
 
 class CreateUser : AppCompatActivity(), CoroutineScope {
+    private val NEWPERSONRESULT = 111
+
     private val CAMERA_SCAN = 1
     private val CAMERA_PERMISSION = 100
     private val READ_EXT_PERMISSION = 101
-    private var person : Person? = null
+    private var person : Person? = Person()
 
     private val job by lazy { Job() }
 
@@ -39,6 +42,9 @@ class CreateUser : AppCompatActivity(), CoroutineScope {
 
         val cameraAction: (View) -> Unit = throttleFirst(350L, MainScope(), this::checkCameraPermission)
         select_avatar.setOnClickListener(cameraAction)
+
+        val saveAction: (View) -> Unit = throttleFirst(350L, MainScope(), this::savePerson)
+        save_button.setOnClickListener(saveAction)
 
         val personId = intent.getLongExtra("personId", 0)
 
@@ -91,17 +97,88 @@ class CreateUser : AppCompatActivity(), CoroutineScope {
 
             p.avatarLarge?.let {
                 Picasso.get().load(it).into(avatar)
-                placeholder.visibility = View.GONE
-                plus_icon.visibility = View.GONE
-                avatar.visibility = View.VISIBLE
+                hideShowAvatarPlaceholder(true)
+            } ?: p.getImage()?.let {
+                avatar.setImageBitmap(it)
+                hideShowAvatarPlaceholder(true)
             } ?: run {
-                avatar.visibility = View.GONE
-                placeholder.visibility = View.VISIBLE
-                plus_icon.visibility = View.VISIBLE
+                hideShowAvatarPlaceholder(false)
             }
         }
 
         loading_person.visibility = View.GONE
+    }
+
+    private fun savePerson(v: View) {
+        val fn : String = first_name.text.toString()
+        val ln : String = last_name.text.toString()
+        val add : String = address.text.toString()
+        val c : String = city.text.toString()
+        val st : String = state.text.toString()
+        val pc : String = zip.text.toString()
+        val ph : String = phone.text.toString()
+        val cl : String = cell.text.toString()
+
+        person?.apply {
+            firstName = fn
+            lastName = ln
+            street = add
+            city = c
+            state = st
+            postcode = pc
+            phone = ph
+            cell = cl
+
+            if (avatar.visibility == View.VISIBLE) {
+                avatar.drawable?.let { img ->
+                    val bm : BitmapDrawable = img as BitmapDrawable
+                    setImage(bm.bitmap)
+                }
+            }
+        }
+
+        // update person in background
+        launch { // coroutine on Main
+            val query = async(Dispatchers.IO) {
+                // retrieve person from db
+                person?.let { p ->
+                    DBHelper.getInstance(this@CreateUser)?.personDao()?.let { pd ->
+                        if (p._id > 0) {
+                            pd.update(p)
+                        } else {
+                            pd.insert(p)
+                        }
+                    }
+                }
+            }
+
+
+            query.await()
+
+            person?.let {
+                // return to previous activity with save flag
+                val i = Intent()
+                i.putExtra("pId", it._id)
+                setResult(NEWPERSONRESULT)
+            }
+
+            finish()
+        }
+    }
+
+    /**
+     * Sets the visibility of the avatar image and placeholder
+     */
+    private fun hideShowAvatarPlaceholder(hide: Boolean) {
+        if (hide) {
+            placeholder.visibility = View.GONE
+            plus_icon.visibility = View.GONE
+            avatar.visibility = View.VISIBLE
+        } else {
+            avatar.visibility = View.GONE
+            placeholder.visibility = View.VISIBLE
+            plus_icon.visibility = View.VISIBLE
+        }
     }
 
     public override fun onActivityResult(requestCode:Int, resultCode:Int, data: Intent?) {
@@ -109,7 +186,6 @@ class CreateUser : AppCompatActivity(), CoroutineScope {
 
         if (requestCode == CAMERA_SCAN) {
             if (data != null) {
-                val contentURI = data.data
                 try {
                     val bitmap = data.extras!!.get("data") as Bitmap
                     val avatarBitmap = Bitmap.createScaledBitmap(bitmap, 100.px(), 100.px(), false)
@@ -119,7 +195,7 @@ class CreateUser : AppCompatActivity(), CoroutineScope {
                     placeholder.visibility = View.GONE
                     plus_icon.visibility = View.GONE
                     avatar.visibility = View.VISIBLE
-                } catch (e: IOException) {
+                } catch (e: Throwable) {
                     e.printStackTrace()
                     Toast.makeText(this@CreateUser, "Failed!", Toast.LENGTH_SHORT).show()
                 }

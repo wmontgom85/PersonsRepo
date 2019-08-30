@@ -33,7 +33,7 @@ class PersonsViewModel : BaseViewModel() {
             val person = safeApiCall(
                 //await the result of deferred type
                 call = { personsApi.getRandomPerson() },
-                errorMessage = "Error fetching forms"
+                errorMessage = "Error fetching person"
                 //convert to mutable list
             )?.results?.get(0)
 

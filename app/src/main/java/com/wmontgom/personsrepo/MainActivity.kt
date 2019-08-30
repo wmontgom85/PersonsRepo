@@ -39,7 +39,7 @@ import android.content.Intent
 // @TODO implement reordering
 
 class MainActivity : AppCompatActivity(), CoroutineScope {
-    private val NEWPERSONRESULT = 1
+    private val NEWPERSONRESULT = 111
 
     private lateinit var personsViewModel: PersonsViewModel
     private lateinit var adapter : PersonsAdapter

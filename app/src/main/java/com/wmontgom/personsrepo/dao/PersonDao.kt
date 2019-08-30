@@ -17,6 +17,9 @@ public interface PersonDao {
     @Delete
     fun delete(person: Person)
 
+    @Update
+    fun update(person: Person)
+
     @Query("DELETE FROM Person")
     fun deleteAll()
 }
