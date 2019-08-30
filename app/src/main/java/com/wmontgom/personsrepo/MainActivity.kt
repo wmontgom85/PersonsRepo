@@ -30,6 +30,7 @@ import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 import android.animation.ValueAnimator
+import android.app.ActivityOptions
 import android.content.Intent
 import android.provider.MediaStore
 import android.view.animation.LinearInterpolator
@@ -247,7 +248,20 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         override fun onBindViewHolder(holder: PersonHolder, position: Int) {
             val p = persons?.get(position)
 
-            p.let { holder.populate(it!!) }
+            p.let {
+                val cb = fun(v:View) {
+                    var i : Intent = Intent(this@MainActivity, CreateUser::class.java)
+                    i.putExtra("personId", holder.personId)
+                    val options = ActivityOptions.makeSceneTransitionAnimation(this@MainActivity,holder.avatar,
+                        "edit_create_person_transition")
+                    startActivityForResult(i, NEWPERSONRESULT, options.toBundle())
+                }
+
+                val menuAction: (View) -> Unit = throttleFirst(1000L, MainScope(), cb)
+                holder.itemView.setOnClickListener(menuAction)
+
+                holder.populate(it!!)
+            }
         }
     }
 
@@ -255,16 +269,19 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
      * PersonHolder class
      */
     inner class PersonHolder(v: View) : RecyclerView.ViewHolder(v) {
+        var personId : Long = 0L
         val avatar : ImageView = v.findViewById(R.id.avatar)
         val name : TextView = v.findViewById(R.id.name)
         val address : TextView  = v.findViewById(R.id.address)
         val phone : TextView  = v.findViewById(R.id.phone)
 
         fun populate(p : Person) {
+            personId = p._id
+
             p.avatarLarge?.let {
                 Picasso.get().load(p.avatarLarge).into(avatar);
             } ?: run {
-                avatar?.visibility = View.INVISIBLE
+                avatar.setImageResource(R.mipmap.avatar)
             }
 
             name.text = String.format("%s %s", p.firstName?.capitalize(), p.lastName?.capitalize())

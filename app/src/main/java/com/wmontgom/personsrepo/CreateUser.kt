@@ -35,6 +35,11 @@ class CreateUser : AppCompatActivity() {
 
     }
 
+    private fun setupForm() {
+        first_name.error = "Please enter a first name"
+        last_name.error = "Please enter a last name"
+    }
+
     public override fun onActivityResult(requestCode:Int, resultCode:Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 

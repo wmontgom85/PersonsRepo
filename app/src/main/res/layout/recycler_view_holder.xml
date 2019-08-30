@@ -25,7 +25,8 @@
             <ImageView
                     android:id="@+id/avatar"
                     android:layout_width="@dimen/card_height"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="match_parent"
+                    android:transitionName="edit_create_person_transition"/>
 
             <LinearLayout
                     android:layout_width="wrap_content"
