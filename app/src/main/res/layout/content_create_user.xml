@@ -9,17 +9,46 @@
         tools:showIn="@layout/activity_create_user"
         tools:context=".CreateUser">
 
+    <RelativeLayout android:id="@+id/select_avatar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="10dp">
+
+        <ImageView android:id="@+id/placeholder"
+                   android:layout_width="100dp"
+                   android:layout_height="100dp"
+                   android:src="@mipmap/avatar"
+                   android:background="#e2e2e2"
+                   android:padding="10dp"/>
+
+        <ImageView android:id="@+id/avatar"
+                   android:layout_width="100dp"
+                   android:layout_height="100dp"
+                   android:background="#e2e2e2"
+                   android:visibility="gone"/>
+
+        <ImageView android:id="@+id/plus_icon"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:src="@android:drawable/ic_input_add"
+                   android:layout_alignBottom="@id/placeholder"
+                   android:layout_centerHorizontal="true"/>
+
+    </RelativeLayout>
+
     <ScrollView android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_above="@id/save_button"
-                android:layout_alignParentTop="true">
+                android:layout_below="@id/select_avatar">
 
         <LinearLayout android:layout_width="match_parent"
                       android:layout_height="wrap_content"
                       android:padding="10dp"
                       android:orientation="vertical">
 
-
+            
 
         </LinearLayout>
 

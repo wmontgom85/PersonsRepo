@@ -30,6 +30,8 @@ import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 import android.animation.ValueAnimator
+import android.content.Intent
+import android.provider.MediaStore
 import android.view.animation.LinearInterpolator
 
 
@@ -42,6 +44,8 @@ import android.view.animation.LinearInterpolator
 // @TODO implement reordering
 
 class MainActivity : AppCompatActivity(), CoroutineScope {
+    private val NEWPERSONRESULT = 1
+
     private lateinit var personsViewModel: PersonsViewModel
     private lateinit var adapter : PersonsAdapter
     private lateinit var linearLayoutManager: LinearLayoutManager
@@ -177,7 +181,8 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         hideActionMenu()
 
         if (v == create_action) {
-
+            val intent = Intent(this@MainActivity, CreateUser::class.java)
+            startActivityForResult(intent, NEWPERSONRESULT)
         } else {
             // generate random user
             loading.visibility = View.VISIBLE
@@ -208,6 +213,14 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
 
             // update recycler view
             adapter.notifyDataSetChanged()
+        }
+    }
+
+    public override fun onActivityResult(requestCode:Int, resultCode:Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == NEWPERSONRESULT) {
+
         }
     }
 
