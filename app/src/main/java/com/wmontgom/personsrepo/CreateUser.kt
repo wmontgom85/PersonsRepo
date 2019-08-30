@@ -56,10 +56,13 @@ class CreateUser : AppCompatActivity(), CoroutineScope {
         last_name.error = "Please enter a last name"
     }
 
+    /**
+     * Attempts to retrieve a person from the db
+     */
     private fun getPerson(pId: Long) {
         launch { // coroutine on Main
             val query = async(Dispatchers.IO) {
-                // insert returned person into db
+                // retrieve person from db
                 DBHelper.getInstance(this@CreateUser)?.personDao()?.let { pd ->
                     person = pd.getPerson(pId)
                 }
@@ -72,6 +75,9 @@ class CreateUser : AppCompatActivity(), CoroutineScope {
         }
     }
 
+    /**
+     * Populates the form based on the loaded user
+     */
     private fun populateForm() {
         person?.let { p ->
             first_name.setText(p.firstName)
@@ -106,8 +112,9 @@ class CreateUser : AppCompatActivity(), CoroutineScope {
                 val contentURI = data.data
                 try {
                     val bitmap = data.extras!!.get("data") as Bitmap
+                    val avatarBitmap = Bitmap.createScaledBitmap(bitmap, 100.px(), 100.px(), false)
 
-                    avatar.setImageBitmap(bitmap)
+                    avatar.setImageBitmap(avatarBitmap)
 
                     placeholder.visibility = View.GONE
                     plus_icon.visibility = View.GONE
