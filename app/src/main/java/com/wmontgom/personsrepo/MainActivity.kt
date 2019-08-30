@@ -1,9 +1,7 @@
 package com.wmontgom.personsrepo
 
 import android.animation.AnimatorSet
-import android.animation.LayoutTransition
 import android.app.AlertDialog
-import android.app.Application
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu
@@ -20,8 +18,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import com.wmontgom.personsrepo.api.DBHelper
-import com.wmontgom.personsrepo.dao.PersonDao
-import com.wmontgom.personsrepo.dao.PersonDao_Impl
 import com.wmontgom.personsrepo.model.Person
 import com.wmontgom.personsrepo.viewmodel.PersonsViewModel
 
@@ -32,8 +28,6 @@ import kotlin.coroutines.CoroutineContext
 import android.animation.ValueAnimator
 import android.app.ActivityOptions
 import android.content.Intent
-import android.provider.MediaStore
-import android.view.animation.LinearInterpolator
 
 
 // @TODO implement swipe to delete
@@ -279,7 +273,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
             personId = p._id
 
             p.avatarLarge?.let {
-                Picasso.get().load(p.avatarLarge).into(avatar);
+                Picasso.get().load(it).into(avatar)
             } ?: run {
                 avatar.setImageResource(R.mipmap.avatar)
             }

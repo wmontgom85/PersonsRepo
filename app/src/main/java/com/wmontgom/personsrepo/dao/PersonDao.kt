@@ -9,7 +9,7 @@ public interface PersonDao {
     fun getPeople(): List<Person>
 
     @Query("SELECT * FROM Person WHERE _id = :id")
-    fun getAmount(id: Long) : Person
+    fun getPerson(id: Long) : Person
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(person: Person)

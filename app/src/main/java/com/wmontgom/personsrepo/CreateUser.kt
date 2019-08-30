@@ -8,22 +8,29 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.squareup.picasso.Picasso
+import com.wmontgom.personsrepo.api.DBHelper
+import com.wmontgom.personsrepo.model.Person
 
-import kotlinx.android.synthetic.main.activity_create_user.*
 import kotlinx.android.synthetic.main.activity_create_user.toolbar
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_create_user.*
-import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.*
 import java.io.IOException
+import kotlin.coroutines.CoroutineContext
 
-class CreateUser : AppCompatActivity() {
+class CreateUser : AppCompatActivity(), CoroutineScope {
     private val CAMERA_SCAN = 1
     private val CAMERA_PERMISSION = 100
     private val READ_EXT_PERMISSION = 101
+    private var person : Person? = null
+
+    private val job by lazy { Job() }
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,11 +40,62 @@ class CreateUser : AppCompatActivity() {
         val cameraAction: (View) -> Unit = throttleFirst(350L, MainScope(), this::checkCameraPermission)
         select_avatar.setOnClickListener(cameraAction)
 
+        val personId = intent.getLongExtra("personId", 0)
+
+        if (personId > 0) {
+            // we're editing a person
+            loading_person.visibility = View.VISIBLE
+
+            // load user in background thread
+            getPerson(personId)
+        }
     }
 
     private fun setupForm() {
         first_name.error = "Please enter a first name"
         last_name.error = "Please enter a last name"
+    }
+
+    private fun getPerson(pId: Long) {
+        launch { // coroutine on Main
+            val query = async(Dispatchers.IO) {
+                // insert returned person into db
+                DBHelper.getInstance(this@CreateUser)?.personDao()?.let { pd ->
+                    person = pd.getPerson(pId)
+                }
+            }
+
+            query.await()
+
+            // fill inputs
+            populateForm()
+        }
+    }
+
+    private fun populateForm() {
+        person?.let { p ->
+            first_name.setText(p.firstName)
+            last_name.setText(p.lastName)
+            address.setText(p.street)
+            city.setText(p.city)
+            state.setText(p.state)
+            zip.setText(p.postcode)
+            phone.setText(p.phone)
+            cell.setText(p.cell)
+
+            p.avatarLarge?.let {
+                Picasso.get().load(it).into(avatar)
+                placeholder.visibility = View.GONE
+                plus_icon.visibility = View.GONE
+                avatar.visibility = View.VISIBLE
+            } ?: run {
+                avatar.visibility = View.GONE
+                placeholder.visibility = View.VISIBLE
+                plus_icon.visibility = View.VISIBLE
+            }
+        }
+
+        loading_person.visibility = View.GONE
     }
 
     public override fun onActivityResult(requestCode:Int, resultCode:Int, data: Intent?) {
